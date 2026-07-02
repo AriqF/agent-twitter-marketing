@@ -1,7 +1,8 @@
 import asyncio
 import logging
 import uuid
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
@@ -355,6 +356,51 @@ async def cmd_create_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     asyncio.create_task(_run_and_notify())
 
 
+def _format_view_plan_message(batch, drafts: list) -> str:
+    slots_by_day: dict[int, list[tuple[int, dict]]] = defaultdict(list)
+    for i, slot in enumerate(batch.content_plan):
+        day = slot.get("day_offset", 0)
+        slots_by_day[day].append((i, slot))
+
+    lines = [
+        "*Content Plan Terbaru*",
+        f"Batch: `{batch.id}`",
+        f"Status: {batch.status}",
+        f"Dibuat: {batch.created_at.strftime('%d %b %Y %H:%M')} WIB",
+        "",
+    ]
+
+    base_date = batch.created_at.date()
+    for day_offset in sorted(slots_by_day.keys()):
+        day_num = day_offset + 1
+        post_date = base_date + timedelta(days=day_offset)
+        lines.append(f"*Hari {day_num} — {post_date.strftime('%d %b %Y')}*")
+
+        day_slots = sorted(
+            slots_by_day[day_offset],
+            key=lambda x: x[1].get("best_time", "00:00"),
+        )
+        for slot_idx, slot in day_slots:
+            best_time = slot.get("best_time", "-")
+            topic = _md(slot.get("topic", "-"))
+            angle = _md(slot.get("angle", "-"))
+            draft_status = drafts[slot_idx].status if slot_idx < len(drafts) else "-"
+
+            lines.append(f"{best_time} WIB | {draft_status}")
+            lines.append(f"Topik: {topic}")
+            lines.append(f"Angle: {angle}")
+            lines.append("")
+
+    status_counts: dict[str, int] = {}
+    for d in drafts:
+        status_counts[d.status] = status_counts.get(d.status, 0) + 1
+    status_summary = ", ".join(f"{k}: {v}" for k, v in status_counts.items())
+    lines.append("---")
+    lines.append(f"Drafts: {len(drafts)} total ({status_summary})")
+
+    return "\n".join(lines)
+
+
 async def cmd_view_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handler for /view_plan command. Shows latest content batch."""
     if not _is_owner(update):
@@ -372,34 +418,13 @@ async def cmd_view_plan(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         drafts_result = await session.execute(
-            select(ContentDraft).where(ContentDraft.batch_id == batch.id)
+            select(ContentDraft)
+            .where(ContentDraft.batch_id == batch.id)
+            .order_by(ContentDraft.created_at)
         )
         drafts = drafts_result.scalars().all()
 
-        status_counts = {}
-        for d in drafts:
-            status_counts[d.status] = status_counts.get(d.status, 0) + 1
-
-    lines = [
-        "*Content Plan Terbaru*",
-        f"Batch ID: `{batch.id}`",
-        f"Status: {batch.status}",
-        f"Dibuat: {batch.created_at.strftime('%d %b %Y %H:%M')} WIB",
-        "",
-    ]
-
-    for i, slot in enumerate(batch.content_plan, 1):
-        topic = slot.get("topic", "-")
-        angle = slot.get("angle", "-")
-        best_time = slot.get("best_time", "-")
-        day_offset = slot.get("day_offset", 0)
-        lines.append(f"[{i}] {topic} | {angle} | {best_time} (day {day_offset})")
-
-    status_summary = ", ".join(f"{k}: {v}" for k, v in status_counts.items())
-    lines.append("")
-    lines.append(f"Drafts: {len(drafts)} total ({status_summary})")
-
-    text = "\n".join(lines)
+    text = _format_view_plan_message(batch, drafts)
     if len(text) > 4000:
         text = text[:4000] + "\n... (truncated)"
 
