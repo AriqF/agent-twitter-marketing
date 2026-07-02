@@ -1,0 +1,165 @@
+product:
+  name: "Skorin"
+  tagline: "Simulasi CAT SKD CPNS — Gratis, Format Asli, Skor Instan"
+  
+  description: >
+    Skorin adalah platform simulasi try out CAT gratis untuk persiapan SKD CPNS 
+    dan TKD BUMN. Dengan format ujian asli (110 soal, 100 menit), penilaian otomatis 
+    per section (TWK/TIU/TKP), dan pembahasan lengkap setiap soal. Soal dikurasi 
+    dengan AI dan divalidasi untuk menyerupai kualitas ujian sebenarnya. 
+    Tanpa biaya, tanpa batasan sesi.
+
+  value_proposition:
+    primary: "Latihan SKD dengan format dan tekanan ujian asli — gratis"
+    secondary:
+      - "Tahu kelemahan per section, bukan cuma skor total"
+      - "Soal bervariasi setiap try out, tidak repetitif"
+      - "Rasakan simulasi CBT tanpa harus bayar mahal"
+
+  pain_points_addressed:
+    - problem: "Latihan soal acak dan tidak terstruktur"
+      solution: "Try out terjadwal dengan format ujian resmi (110 soal, 100 menit)"
+    - problem: "Sulit mencari simulasi CBT yang realistis dan terjangkau"
+      solution: "Simulasi gratis dengan tampilan dan mekanisme mirip CAT BKN"
+    - problem: "Tidak tahu harus lulus per section atau total"
+      solution: "Skor otomatis per TWK/TIU/TKP dengan passing grade masing-masing"
+    - problem: "Soal latihan yang sama terus, tidak menantang"
+      solution: "Soal dikurasi AI, selalu bervariasi setiap sesi"
+
+  key_features:
+    - title: "Format Ujian Asli"
+      description: "110 soal, 100 menit — sama persis dengan SKD CPNS sesungguhnya"
+    - title: "Skor Per Section"
+      description: "Penilaian otomatis TWK, TIU (Verbal/Numerik/Logis), dan TKP dengan passing grade resmi"
+    - title: "Pembahasan Lengkap"
+      description: "Setiap soal dilengkapi pembahasan detail setelah try out selesai"
+    - title: "Try Out Terjadwal"
+      description: "Event try out rutin untuk simulasi tekanan ujian nyata"
+    - title: "Gratis Tanpa Batas"
+      description: "Tidak ada biaya, tidak ada batasan jumlah sesi try out"
+    - title: "Soal Berkualitas AI"
+      description: "Soal di-generate dan divalidasi dengan AI untuk kualitas konsisten"
+
+  exam_structure:
+    type: "SKD CPNS"
+    total_questions: 110
+    duration_minutes: 100
+    sections:
+      - key: "TWK"
+        name: "Tes Wawasan Kebangsaan"
+        questions: 30
+        passing_grade: 65
+      - key: "TIU"
+        name: "Tes Intelegensia Umum"
+        questions: 35
+        subsections: ["Verbal (12)", "Numerik (12)", "Logis (11)"]
+        passing_grade: 80
+      - key: "TKP"
+        name: "Tes Karakteristik Pribadi"
+        questions: 45
+        passing_grade: 166
+    pass_condition: "Harus lulus passing grade di SEMUA section (TWK, TIU, TKP)"
+
+  tone_of_voice:
+    style: "friendly, informatif, semangat, supportif, realistis"
+    do:
+      - "Gunakan bahasa yang relate dengan perjuangan calon ASN"
+      - "Berikan motivasi tanpa janji berlebihan"
+      - "Jelaskan fitur dengan konkret dan jujur"
+      - "Acknowledge tantangan ujian SKD"
+    dont:
+      - "Jangan klaim 'pasti lolos' atau garansi kelulusan"
+      - "Jangan gunakan hype tanpa substansi"
+      - "Jangan meremehkan kompetitor secara langsung"
+
+  target_audience:
+    primary: "Calon peserta CPNS yang serius mempersiapkan SKD"
+    segments:
+      - "Fresh graduate yang baru pertama kali ikut CPNS"
+      - "Pekerja yang ingin beralih ke jalur ASN"
+      - "Peserta yang pernah gagal dan ingin persiapan lebih matang"
+      - "Calon peserta BUMN yang mempersiapkan TKD"
+    characteristics:
+      - "Mencari latihan gratis tapi berkualitas"
+      - "Butuh simulasi yang mirip ujian asli"
+      - "Ingin tahu kelemahan spesifik per section"
+      - "Punya waktu terbatas untuk persiapan"
+
+  keywords:
+    primary:
+      - "try out CPNS gratis"
+      - "simulasi CAT CPNS"
+      - "try out SKD online"
+      - "latihan CAT gratis"
+    secondary:
+      - "TWK TIU TKP"
+      - "passing grade SKD CPNS"
+      - "simulasi CBT CPNS"
+      - "tes SKD online gratis"
+      - "CPNS 2026"
+      - "try out BUMN gratis"
+    long_tail:
+      - "cara lolos passing grade TWK TIU TKP"
+      - "latihan soal CPNS format asli"
+      - "simulasi ujian CAT BKN gratis"
+
+  reply_keywords:
+    - "try out CPNS"
+    - "simulasi CPNS"
+    - "simulasi SKD CPNS"
+    - "try out SKD online"
+    - "latihan SKD gratis"
+    - "passing grade SKD CPNS"
+    - "tes SKD online gratis"
+    - "CPNS 2026"
+    - "try out SKD gratis"
+    - "cara lolos passing grade TWK TIU TKP"
+    - "latihan soal CPNS"
+    - "simulasi ujian CAT BKN gratis"
+    - "SKD CPNS"
+
+  messaging_hooks:
+    headlines:
+      - "110 Soal, 100 Menit. Kamu Bisa?"
+      - "Siap Menghadapi SKD CPNS?"
+      - "Tahu Skormu Per TWK, TIU, TKP — Bukan Cuma Total"
+      - "Latihan Gratis, Format Ujian Asli"
+    subtitles:
+      - "Simulasi ujian SKD CPNS. Soal bervariasi. Lihat skor dan pembahasan instan."
+      - "Format ujian asli: 110 soal, 100 menit. Tanpa biaya, tanpa batasan sesi."
+    cta_variants:
+      - "Mulai Try Out Gratis"
+      - "Coba Sekarang — Gratis"
+      - "Daftar & Latihan Sekarang"
+      - "Tes Kemampuanmu Sekarang"
+
+  social_proof:
+    leaderboard: "Lihat peringkatmu di antara peserta lain (identitas tersembunyi)"
+    trust_signals:
+      - "Format ujian sesuai SKD CPNS resmi"
+      - "Soal dikurasi dan divalidasi dengan AI"
+      - "Gratis tanpa hidden cost"
+
+  links:
+    website: "https://skorin.site"
+    register: "https://skorin.site/register"
+    try_out: "https://skorin.site/try-out"
+
+  cta:
+    primary: "Mulai Try Out Gratis"
+    secondary: "Daftar Sekarang"
+    url: "https://skorin.site/register"
+
+  roadmap_coming_soon:
+    - feature: "TKD BUMN"
+      status: "coming_soon"
+      description: "Simulasi try out untuk seleksi BUMN"
+    - feature: "Personal Analytics"
+      status: "coming_soon"
+      description: "Statistik progres dan analisis kelemahan per topik"
+      tier: "premium"
+
+  competitor_differentiation:
+    vs_paid_platforms: "Gratis dengan kualitas setara platform berbayar"
+    vs_random_soal: "Format terstruktur sesuai ujian asli, bukan soal acak"
+    vs_no_explanation: "Pembahasan lengkap untuk setiap soal"

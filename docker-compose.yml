@@ -1,0 +1,7 @@
+services:
+  agent:
+    build: .
+    env_file: .env
+    volumes:
+      - ./product.yaml:/app/product.yaml
+    restart: unless-stopped
