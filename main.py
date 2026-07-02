@@ -8,12 +8,14 @@ from telegram.ext import (
     filters,
 )
 
+from api.server import start_http_server, stop_http_server
 from config import (
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_UPDATE_MODE,
     TELEGRAM_WEBHOOK_LISTEN,
     TELEGRAM_WEBHOOK_PATH,
     TELEGRAM_WEBHOOK_PORT,
+    TELEGRAM_WEBHOOK_SECRET,
     TELEGRAM_WEBHOOK_URL,
 )
 from db.session import init_db
@@ -26,6 +28,17 @@ from services.telegram import (
     handle_revision_message,
 )
 from services.wiki_writer import seed_product_wiki_if_empty
+
+
+def _validate_webhook_config() -> None:
+    if not TELEGRAM_WEBHOOK_URL:
+        raise ValueError(
+            "TELEGRAM_WEBHOOK_URL is required when TELEGRAM_UPDATE_MODE=webhook"
+        )
+    if not TELEGRAM_WEBHOOK_URL.rstrip("/").endswith(TELEGRAM_WEBHOOK_PATH.rstrip("/")):
+        raise ValueError(
+            f"TELEGRAM_WEBHOOK_URL must end with TELEGRAM_WEBHOOK_PATH ({TELEGRAM_WEBHOOK_PATH})"
+        )
 
 
 async def main():
@@ -49,18 +62,23 @@ async def main():
     await app.initialize()
     await app.start()
 
-    if TELEGRAM_UPDATE_MODE == "webhook":
-        if not TELEGRAM_WEBHOOK_URL:
-            raise ValueError(
-                "TELEGRAM_WEBHOOK_URL is required when TELEGRAM_UPDATE_MODE=webhook"
-            )
-        await app.updater.start_webhook(
-            listen=TELEGRAM_WEBHOOK_LISTEN,
-            port=TELEGRAM_WEBHOOK_PORT,
-            url_path=TELEGRAM_WEBHOOK_PATH,
-            webhook_url=TELEGRAM_WEBHOOK_URL,
+    http_runner = None
+    use_webhook = TELEGRAM_UPDATE_MODE == "webhook"
+
+    if use_webhook:
+        _validate_webhook_config()
+        http_runner = await start_http_server(app)
+        await app.bot.set_webhook(
+            url=TELEGRAM_WEBHOOK_URL,
+            secret_token=TELEGRAM_WEBHOOK_SECRET or None,
         )
-        print(f"AI Marketing Agent is running (webhook mode at {TELEGRAM_WEBHOOK_URL})...")
+        print(
+            f"AI Marketing Agent is running (webhook mode at {TELEGRAM_WEBHOOK_URL})..."
+        )
+        print(
+            f"HTTP server listening on {TELEGRAM_WEBHOOK_LISTEN}:{TELEGRAM_WEBHOOK_PORT}"
+        )
+        print(f"Webhook: POST {TELEGRAM_WEBHOOK_PATH} | Health: GET /health")
     else:
         await app.updater.start_polling()
         print("AI Marketing Agent is running (polling mode)...")
@@ -71,7 +89,12 @@ async def main():
         pass
     finally:
         scheduler.shutdown()
-        await app.updater.stop()
+        if use_webhook:
+            await app.bot.delete_webhook(drop_pending_updates=False)
+            if http_runner is not None:
+                await stop_http_server(http_runner)
+        else:
+            await app.updater.stop()
         await app.stop()
         await app.shutdown()
 
