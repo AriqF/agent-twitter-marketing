@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime
 
@@ -7,6 +8,8 @@ from config import PRODUCT
 from db.models import AgentWiki, WikiCategory
 from db.session import get_session
 from services.llm import invoke, parse_json
+
+logger = logging.getLogger(__name__)
 
 
 # ─── SEED ────────────────────────────────────────────────────────────────────
@@ -121,12 +124,14 @@ def _build_audience_keywords_content() -> str:
 
     if kw := PRODUCT.get("keywords"):
         lines.append("\nKeywords untuk Konten:")
-        if primary := kw.get("primary"):
-            lines.append(f"  Primary: {', '.join(primary)}")
-        if secondary := kw.get("secondary"):
-            lines.append(f"  Secondary: {', '.join(secondary)}")
-        if long_tail := kw.get("long_tail"):
-            lines.append(f"  Long-tail: {', '.join(long_tail)}")
+        research = kw.get("research") or {}
+        if trending := research.get("trending_topics"):
+            lines.append(f"  Research trending: {', '.join(trending[:5])}")
+        if product_related := research.get("product_related"):
+            lines.append(f"  Research product: {', '.join(product_related[:5])}")
+        outreach = kw.get("outreach") or {}
+        if conv := outreach.get("conversation_keywords"):
+            lines.append(f"  Outreach conversation: {', '.join(conv)}")
 
     if tov := PRODUCT.get("tone_of_voice"):
         lines.append(f"\nTone of Voice: {tov.get('style', '')}")
@@ -226,6 +231,7 @@ async def process_feedback(
     1. Apakah feedback ini menghasilkan insight yang signifikan dan belum tercakup di wiki?
     2. Jika ada entry wiki yang relevan, apakah perlu diperbarui/diperkuat?
     3. Apakah perlu membuat entry baru?
+    {"4. Untuk reject: prioritaskan alasan owner sebagai sumber utama pola rejection." if action == "reject" else ""}
 
     Jangan buat entry jika feedback tidak menghasilkan insight baru yang actionable.
     Konsolidasikan pola yang sama ke satu entry, jangan duplikasi.
@@ -251,7 +257,8 @@ async def process_feedback(
 
     try:
         result_json = parse_json(response)
-    except Exception:
+    except Exception as e:
+        logger.warning("process_feedback JSON parse failed source_id=%s: %s", source_id, e)
         return
 
     if not result_json.get("should_update"):
@@ -285,6 +292,45 @@ async def process_feedback(
                 session.add(new_entry)
 
         await session.commit()
+
+
+async def record_outreach_sample(
+    twitter_post_id: str,
+    author_username: str | None,
+    tweet_content: str,
+    keyword_matched: str,
+    score: int,
+    signals: list[str],
+) -> bool:
+    """Record low-score outreach tweet as wiki learning sample. Returns True if saved."""
+    key = f"outreach_sample_{twitter_post_id}"
+    async with get_session() as session:
+        existing = await session.execute(
+            select(AgentWiki).where(AgentWiki.key == key)
+        )
+        if existing.scalar_one_or_none():
+            return False
+
+        content = "\n".join(
+            [
+                f"Tweet ID: {twitter_post_id}",
+                f"Author: @{author_username or 'unknown'}",
+                f"Query keyword: {keyword_matched}",
+                f"Score: {score} (below reply threshold)",
+                f"Signals: {', '.join(signals)}",
+                f"Content:\n{tweet_content}",
+            ]
+        )
+        session.add(
+            AgentWiki(
+                category=WikiCategory.OUTREACH_SAMPLE,
+                key=key,
+                content=content,
+                source_ids=None,
+            )
+        )
+        await session.commit()
+    return True
 
 
 # ─── HELPERS ─────────────────────────────────────────────────────────────────
@@ -321,7 +367,12 @@ def _build_feedback_context(
         f"Status: {action_label}",
         f"Konten:\n{content}",
     ]
-    if revision_note:
-        lines.append(f"Catatan dari owner: {revision_note}")
+    if action == "reject":
+        if revision_note:
+            lines.append(f"Alasan reject dari owner: {revision_note}")
+        else:
+            lines.append("Alasan reject: (tidak diberikan owner)")
+    elif revision_note:
+        lines.append(f"Catatan revisi dari owner: {revision_note}")
 
     return "\n".join(lines)

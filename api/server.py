@@ -1,3 +1,5 @@
+import logging
+
 from aiohttp import web
 from telegram import Update
 from telegram.ext import Application
@@ -9,23 +11,29 @@ from config import (
     TELEGRAM_WEBHOOK_SECRET,
 )
 
+logger = logging.getLogger(__name__)
+
 
 async def health_handler(_request: web.Request) -> web.Response:
     return web.json_response({"status": "ok"})
 
 
 async def telegram_webhook_handler(request: web.Request) -> web.Response:
-    ptb_app: Application = request.app["ptb_app"]
+    try:
+        ptb_app: Application = request.app["ptb_app"]
 
-    if TELEGRAM_WEBHOOK_SECRET:
-        token = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
-        if token != TELEGRAM_WEBHOOK_SECRET:
-            return web.Response(status=403)
+        if TELEGRAM_WEBHOOK_SECRET:
+            token = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
+            if token != TELEGRAM_WEBHOOK_SECRET:
+                return web.Response(status=403)
 
-    data = await request.json()
-    update = Update.de_json(data, ptb_app.bot)
-    await ptb_app.process_update(update)
-    return web.Response(status=200)
+        data = await request.json()
+        update = Update.de_json(data, ptb_app.bot)
+        await ptb_app.process_update(update)
+        return web.Response(status=200)
+    except Exception:
+        logger.exception("Webhook processing failed")
+        return web.Response(status=500)
 
 
 async def start_http_server(ptb_app: Application) -> web.AppRunner:

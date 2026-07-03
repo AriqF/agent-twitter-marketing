@@ -1,17 +1,6 @@
-DO $$ BEGIN
-    CREATE TYPE wikicategory AS ENUM (
-        'approved_pattern',
-        'rejection_pattern',
-        'revision_pattern',
-        'product'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN NULL;
-END $$;
-
 CREATE TABLE IF NOT EXISTS agent_wiki (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    category wikicategory NOT NULL,
+    category VARCHAR(50) NOT NULL,
     key TEXT NOT NULL UNIQUE,
     content TEXT NOT NULL,
     source_ids UUID[],

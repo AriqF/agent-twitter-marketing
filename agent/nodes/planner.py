@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 
 from agent.state import AgentState
@@ -7,25 +8,31 @@ from db.models import WikiCategory
 from services.llm import invoke, parse_json
 from services.wiki_writer import get_wiki_context
 
+logger = logging.getLogger(__name__)
+
 
 async def planner_node(state: AgentState) -> AgentState:
-    research_brief = state["research_brief"]
-    now = datetime.now()
+    logger.info("planner_node start")
+    try:
+        research_brief = state["research_brief"]
+        now = datetime.now()
 
-    wiki_context = await get_wiki_context(
-        categories=[WikiCategory.APPROVED_PATTERN, WikiCategory.REJECTION_PATTERN]
-    )
+        wiki_context = await get_wiki_context(
+            categories=[WikiCategory.APPROVED_PATTERN, WikiCategory.REJECTION_PATTERN]
+        )
 
-    tone = PRODUCT.get("tone_of_voice", {})
-    tone_style = tone.get("style", tone) if isinstance(tone, dict) else tone
+        tone = PRODUCT.get("tone_of_voice", {})
+        tone_style = tone.get("style", tone) if isinstance(tone, dict) else tone
 
-    audience = PRODUCT.get("target_audience", {})
-    audience_primary = audience.get("primary", audience) if isinstance(audience, dict) else audience
+        audience = PRODUCT.get("target_audience", {})
+        audience_primary = (
+            audience.get("primary", audience) if isinstance(audience, dict) else audience
+        )
 
-    cta = PRODUCT.get("cta", {})
-    cta_primary = cta.get("primary", cta) if isinstance(cta, dict) else cta
+        cta = PRODUCT.get("cta", {})
+        cta_primary = cta.get("primary", cta) if isinstance(cta, dict) else cta
 
-    prompt = f"""
+        prompt = f"""
     Kamu adalah content strategist untuk {PRODUCT['name']}.
     Tone: {tone_style}
     Target audience: {audience_primary}
@@ -51,7 +58,11 @@ async def planner_node(state: AgentState) -> AgentState:
     ]
     """
 
-    response = await invoke(prompt)
-    content_plan = parse_json(response)
+        response = await invoke(prompt)
+        content_plan = parse_json(response)
 
-    return {**state, "content_plan": content_plan}
+        logger.info("planner_node done slots=%d", len(content_plan))
+        return {**state, "content_plan": content_plan}
+    except Exception:
+        logger.exception("planner_node failed")
+        raise

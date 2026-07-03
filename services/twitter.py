@@ -60,7 +60,7 @@ def _search_tweets_sync(keyword: str, limit: int) -> list[dict]:
         response = client.search_recent_tweets(
             query=query,
             max_results=clamped_limit,
-            tweet_fields=["created_at", "author_id", "note_tweet"],
+            tweet_fields=["created_at", "author_id", "note_tweet", "public_metrics"],
             expansions=["author_id"],
             user_fields=["username"],
         )
@@ -85,13 +85,26 @@ def _search_tweets_sync(keyword: str, limit: int) -> list[dict]:
     results = []
     for tweet in response.data:
         username = users_map.get(tweet.author_id, "unknown")
+        metrics = getattr(tweet, "public_metrics", None) or {}
+        if hasattr(metrics, "like_count"):
+            likes = metrics.like_count or 0
+            retweets = metrics.retweet_count or 0
+            replies = metrics.reply_count or 0
+        else:
+            likes = metrics.get("like_count", 0)
+            retweets = metrics.get("retweet_count", 0)
+            replies = metrics.get("reply_count", 0)
         results.append({
             "id": str(tweet.id),
             "username": username,
             "text": _get_full_tweet_text(tweet),
             "created_at": str(tweet.created_at) if tweet.created_at else "",
+            "public_metrics": {
+                "likes": likes,
+                "retweets": retweets,
+                "replies": replies,
+            },
         })
-
     return results
 
 

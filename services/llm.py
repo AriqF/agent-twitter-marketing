@@ -1,9 +1,12 @@
 import json
+import logging
 import re
 
 from langchain_openai import ChatOpenAI
 
 from config import OPENAI_API_KEY, OPENAI_MODEL
+
+logger = logging.getLogger(__name__)
 
 _llm = None
 
@@ -16,8 +19,13 @@ def get_llm() -> ChatOpenAI:
 
 
 async def invoke(prompt: str) -> str:
-    response = await get_llm().ainvoke(prompt)
-    return response.content
+    try:
+        logger.info("LLM Invoke start")
+        response = await get_llm().ainvoke(prompt)
+        return response.content
+    except Exception:
+        logger.exception("LLM invoke failed")
+        raise
 
 
 def parse_json(text: str):
@@ -25,4 +33,8 @@ def parse_json(text: str):
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
-    return json.loads(text.strip())
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError as e:
+        snippet = text[:100].replace("\n", " ")
+        raise ValueError(f"Invalid JSON from LLM: {snippet}") from e

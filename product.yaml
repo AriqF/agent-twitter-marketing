@@ -61,12 +61,13 @@ product:
     pass_condition: "Harus lulus passing grade di SEMUA section (TWK, TIU, TKP)"
 
   tone_of_voice:
-    style: "friendly, informatif, semangat, supportif, realistis"
+    style: "friendly, informatif, semangat, supportif, realistis, tapi juga jenaka dengan senang menyelipkan jokes yang disenangi oleh Gen Z"
     do:
       - "Gunakan bahasa yang relate dengan perjuangan calon ASN"
       - "Berikan motivasi tanpa janji berlebihan"
       - "Jelaskan fitur dengan konkret dan jujur"
       - "Acknowledge tantangan ujian SKD"
+      - "Sesekali gunakan jokes untuk menarik perhatian"
     dont:
       - "Jangan klaim 'pasti lolos' atau garansi kelulusan"
       - "Jangan gunakan hype tanpa substansi"
@@ -86,37 +87,133 @@ product:
       - "Punya waktu terbatas untuk persiapan"
 
   keywords:
-    primary:
-      - "try out CPNS gratis"
-      - "simulasi CAT CPNS"
-      - "try out SKD online"
-      - "latihan CAT gratis"
-    secondary:
-      - "TWK TIU TKP"
-      - "passing grade SKD CPNS"
-      - "simulasi CBT CPNS"
-      - "tes SKD online gratis"
-      - "CPNS 2026"
-      - "try out BUMN gratis"
-    long_tail:
-      - "cara lolos passing grade TWK TIU TKP"
-      - "latihan soal CPNS format asli"
-      - "simulasi ujian CAT BKN gratis"
+    research:
+      trending_topics:
+        - "CPNS 2026"
+        - "CASN 2026"
+        - "SKD CPNS"
+        - "SKB CPNS"
+        - "passing grade CPNS"
+        - "TWK TIU TKP"
+        - "seleksi CPNS"
+        - "jadwal CPNS"
+        - "pengumuman CPNS"
 
-  reply_keywords:
-    - "try out CPNS"
-    - "simulasi CPNS"
-    - "simulasi SKD CPNS"
-    - "try out SKD online"
-    - "latihan SKD gratis"
-    - "passing grade SKD CPNS"
-    - "tes SKD online gratis"
-    - "CPNS 2026"
-    - "try out SKD gratis"
-    - "cara lolos passing grade TWK TIU TKP"
-    - "latihan soal CPNS"
-    - "simulasi ujian CAT BKN gratis"
-    - "SKD CPNS"
+      product_related:
+        - "try out CPNS gratis"
+        - "simulasi CAT CPNS"
+        - "latihan CAT online"
+        - "latihan soal CPNS"
+        - "simulasi SKD"
+        - "try out SKD online"
+        - "tes SKD online"
+        - "belajar CPNS"
+        - "bank soal CPNS"
+
+      competitor:
+
+    outreach:
+      conversation_keywords:
+        - "CPNS"
+        - "SKD"
+        - "CAT"
+        - "TWK"
+        - "TIU"
+        - "TKP"
+        - "ASN"
+        - "CASN"
+
+      intent_keywords:
+        - "ada rekomendasi"
+        - "ada yang pernah pakai"
+        - "bagus nggak"
+        - "worth it nggak"
+        - "bingung"
+        - "kesulitan"
+        - "susah"
+        - "gimana ya"
+        - "mulai belajar"
+        - "belajar dari mana"
+        - "tips"
+        - "cara belajar"
+        - "cara lolos"
+        - "passing grade"
+        - "try out"
+        - "simulasi"
+        - "latihan soal"
+        - "soal CPNS"
+
+      pain_point_keywords:
+        - "nggak lolos"
+        - "takut gagal"
+        - "nilai TIU jelek"
+        - "nilai TKP rendah"
+        - "TWK susah"
+        - "TIU susah"
+        - "TKP susah"
+        - "waktu habis"
+        - "sering salah"
+        - "kurang latihan"
+        - "belum siap"
+        - "gugup"
+        - "mentok"
+
+      buying_signals:
+        - "rekomendasi try out"
+        - "try out gratis"
+        - "simulasi CAT"
+        - "aplikasi CPNS"
+        - "website CPNS"
+        - "platform belajar CPNS"
+        - "bank soal"
+        - "latihan CAT"
+        - "mau beli try out"
+
+      question_patterns:
+        - "?"
+        - "ada yang tahu"
+        - "ada saran"
+        - "ada rekomendasi"
+        - "gimana ya"
+        - "menurut kalian"
+        - "help"
+        - "tolong"
+
+      brand_accounts:
+        - "skorinsite"
+
+    filtering:
+      negative_keywords:
+        - "giveaway"
+        - "slot"
+        - "casino"
+        - "judol"
+        - "crypto signal"
+        - "airdrop"
+        - "admin recruitment"
+        - "lowongan kerja"
+        - "walk interview"
+        - "diskon"
+        - "promo"
+        - "affiliate"
+        - "kode referral"
+        - "voucher"
+
+    scoring:
+      contains_conversation_keyword: 25
+      contains_intent_keyword: 30
+      contains_pain_point: 45
+      contains_buying_signal: 40
+      contains_question_pattern: 35
+      engagement_above_threshold: 10
+      author_not_brand_account: 15
+      duplicate_conversation: -50
+      contains_negative_keyword: -100
+
+    thresholds:
+      reply: 60
+      human_review: 80
+      engagement_min: 5
 
   messaging_hooks:
     headlines:
@@ -132,6 +229,40 @@ product:
       - "Coba Sekarang — Gratis"
       - "Daftar & Latihan Sekarang"
       - "Tes Kemampuanmu Sekarang"
+    
+  research_context: >
+    Skorin — Simulasi CAT SKD CPNS gratis dengan format ujian asli (110 soal, 100 menit),
+    penilaian per section TWK/TIU/TKP, dan pembahasan lengkap.
+    Target audiens: calon peserta CPNS/SKD yang butuh latihan realistis tanpa biaya.
+    Value proposition: latihan format asli, skor per section, soal bervariasi, gratis tanpa batas.
+
+  research_brief:
+    - "Identifikasi tren, berita, dan percakapan CPNS/CASN yang sedang meningkat dalam 7-14 hari terakhir."
+    - "Temukan pain points, pertanyaan, dan kebutuhan calon peserta CPNS berdasarkan diskusi komunitas dan media sosial."
+    - "Analisis konten kompetitor dengan engagement tinggi beserta faktor yang kemungkinan menyebabkan performanya."
+    - "Identifikasi keyword, hashtag, dan search intent yang relevan."
+    - "Temukan content gap yang belum banyak dibahas namun berpotensi menarik audiens."
+    - "Hubungkan setiap insight dengan fitur atau value proposition produk secara natural."
+    - "Berikan rekomendasi hook, angle, tone, format konten, dan CTA yang paling sesuai."
+    - "Prioritaskan seluruh rekomendasi berdasarkan potensi engagement, relevansi terhadap produk, dan peluang konversi."
+
+  research_output_rules:
+    - "Bahasa Indonesia"
+    - "Fokus pada CPNS/SKD dan persiapan ujian CAT"
+    - "Insight harus actionable untuk content marketing Twitter"
+    - "DILARANG mengarang data di luar sample tweet; jika data kurang, sebutkan keterbatasannya"
+
+  outreach_context: >
+    Skorin — simulasi CAT SKD CPNS gratis, format ujian asli (110 soal, 100 menit),
+    skor per section TWK/TIU/TKP, pembahasan lengkap. Target: calon peserta CPNS
+    yang butuh latihan realistis tanpa biaya.
+
+  outreach_reply_rules:
+    - "Policy konservatif — skip jika ragu relevansinya"
+    - "Reply harus natural dan helpful, bukan hard-sell atau spammy"
+    - "Maksimal 200 karakter, Bahasa Indonesia"
+    - "Mention website hanya jika sangat relevan dengan kebutuhan user"
+    - "Prioritaskan tweet dengan intent tanya rekomendasi, pain point, atau buying signal"
 
   social_proof:
     leaderboard: "Lihat peringkatmu di antara peserta lain (identitas tersembunyi)"

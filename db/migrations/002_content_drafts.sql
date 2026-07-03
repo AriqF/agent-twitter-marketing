@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS content_drafts (
     batch_id UUID NOT NULL REFERENCES content_batches(id) ON DELETE CASCADE,
     tweet_copy TEXT NOT NULL,
     scheduled_at TIMESTAMPTZ NOT NULL,
-    status TEXT DEFAULT 'pending',
+    status VARCHAR(50) DEFAULT 'pending',
     revision_note TEXT,
     approved_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
